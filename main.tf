@@ -27,7 +27,8 @@ module "alb" {
 
   vpc_id            = module.networking.vpc_id
   public_subnet_ids = module.networking.public_subnet_ids
-  alb_sg_id         = module.security.web_sg_id
+  web_alb-sg_id     = module.security.web_sg_id
+
 
   environment  = var.environment
   project_name = var.project_name

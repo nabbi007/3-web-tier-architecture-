@@ -1,6 +1,6 @@
 output "web_sg_id" {
   description = "The ID of the Web/ALB security group"
-  value       = aws_security_group.web_alb-sg.id
+  value       = aws_security_group.web_alb_sg.id
 }
 
 output "app_sg_id" {
