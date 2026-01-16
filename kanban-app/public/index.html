@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kanban Board</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🎯 Kanban Board</h1>
+      <p class="subtitle">3-Tier Architecture - Task Management</p>
+    </header>
+    
+    <div class="add-task-section">
+      <h2>Add New Task</h2>
+      <form id="taskForm">
+        <input type="text" id="taskTitle" placeholder="Task title" required>
+        <textarea id="taskDescription" placeholder="Task description (optional)" rows="3"></textarea>
+        <select id="taskStatus">
+          <option value="todo">📝 To Do</option>
+          <option value="in-progress">🚀 In Progress</option>
+          <option value="done">✅ Done</option>
+        </select>
+        <button type="submit">Add Task</button>
+      </form>
+    </div>
+    
+    <div class="kanban-board">
+      <div class="column">
+        <h3>📝 To Do</h3>
+        <div class="task-list" id="todo-list"></div>
+      </div>
+      
+      <div class="column">
+        <h3>🚀 In Progress</h3>
+        <div class="task-list" id="in-progress-list"></div>
+      </div>
+      
+      <div class="column">
+        <h3>✅ Done</h3>
+        <div class="task-list" id="done-list"></div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="/app.js"></script>
+</body>
+</html>

@@ -8,47 +8,77 @@ resource "aws_launch_template" "app" {
   image_id               = data.aws_ami.ubuntu.id
   instance_type          = var.instance_type
   vpc_security_group_ids = [var.app_sg_id]
+  
+  iam_instance_profile {
+    name = aws_iam_instance_profile.ec2_profile.name
+  }
 
   user_data = base64encode(<<-EOF
     #!/bin/bash
     set -e
     
-    # Log everything to file
+    # Log everything
     exec > >(tee /var/log/user-data.log)
     exec 2>&1
     
-    echo "Starting user data script..."
+    echo "Starting instance setup..."
     
-    # Update system
+    # Update and install dependencies
     apt-get update -y
+    apt-get install -y git nodejs npm
     
-    # Install Node.js 20.x
-    curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-    apt-get install -y nodejs
+    # Clone application from Git
+    cd /opt
+    git clone https://github.com/YOUR_USERNAME/kanban-app.git
+    cd kanban-app
     
-    # Create app directory
-    mkdir -p /opt/kanban-app
-    cd /opt/kanban-app
+    # Set environment variables
+    cat > .env <<ENV
+    DB_HOST=${split(":", var.db_endpoint)[0]}
+    DB_USER=${var.db_username}
+    DB_PASSWORD=${var.db_password}
+    DB_NAME=${var.db_name}
+    PORT=80
+    ENV
     
-    # Create package.json
-    cat > package.json <<'PACKAGE'
-    {
-      "name": "kanban-app",
-      "version": "1.0.0",
-      "description": "Simple Kanban API",
-      "main": "server.js",
-      "scripts": {
-        "start": "node server.js"
-      },
-      "dependencies": {
-        "express": "^4.18.2",
-        "mysql2": "^3.6.5"
-      }
-    }
-    PACKAGE
+    # Install dependencies
+    npm install --production
     
-    # Create server.js
-    cat > server.js <<'SERVER'
+    # Create systemd service
+    cat > /etc/systemd/system/kanban.service <<SERVICE
+    [Unit]
+    Description=Kanban API Service
+    After=network.target
+    
+    [Service]
+    Type=simple
+    User=root
+    WorkingDirectory=/opt/kanban-app
+    EnvironmentFile=/opt/kanban-app/.env
+    ExecStart=/usr/bin/node server.js
+    Restart=always
+    RestartSec=10
+    
+    [Install]
+    WantedBy=multi-user.target
+    SERVICE
+    
+    # Start service
+    systemctl daemon-reload
+    systemctl enable kanban
+    systemctl start kanban
+    
+    echo "Setup completed!"
+  EOF
+  )
+
+  tags = {
+    Name        = "${var.project_name}-${var.environment}-app"
+    Environment = var.environment
+    Project     = var.project_name
+    Owner       = var.owner
+  }
+}
     const express = require('express');
     const mysql = require('mysql2/promise');
     const path = require('path');
