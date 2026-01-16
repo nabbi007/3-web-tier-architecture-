@@ -61,6 +61,8 @@ module "compute" {
 
   ami_ssm_parameter_name = var.ami_ssm_parameter_name
   instance_type          = var.instance_type
+  app_repo_url           = var.app_repo_url
+  app_version            = var.app_version
 
   # Database connection info
   db_endpoint = module.database.db_endpoint
