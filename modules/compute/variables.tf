@@ -67,3 +67,24 @@ variable "ami_owner" {
   description = "Owner ID for the AMI filter"
   default     = "099720109477" # Canonical
 }
+
+variable "db_endpoint" {
+  description = "RDS database endpoint"
+  type        = string
+}
+
+variable "db_name" {
+  description = "Database name"
+  type        = string
+}
+
+variable "db_username" {
+  description = "Database username"
+  type        = string
+}
+
+variable "db_password" {
+  description = "Database password"
+  type        = string
+  sensitive   = true
+}

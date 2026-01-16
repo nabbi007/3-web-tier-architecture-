@@ -35,6 +35,22 @@ module "alb" {
   owner        = var.owner
 }
 
+module "database" {
+  source = "./modules/database"
+
+  vpc_id        = module.networking.vpc_id
+  db_subnet_ids = module.networking.db_private_subnet_ids
+  db_sg_id      = module.security.db_sg_id
+
+  db_name     = var.db_name
+  db_username = var.db_username
+  db_password = var.db_password
+
+  environment  = var.environment
+  project_name = var.project_name
+  owner        = var.owner
+}
+
 module "compute" {
   source = "./modules/compute"
 
@@ -46,18 +62,11 @@ module "compute" {
   ami_ssm_parameter_name = var.ami_ssm_parameter_name
   instance_type          = var.instance_type
 
-
-  environment  = var.environment
-  project_name = var.project_name
-  owner        = var.owner
-}
-
-module "database" {
-  source = "./modules/database"
-
-  vpc_id        = module.networking.vpc_id
-  db_subnet_ids = module.networking.db_private_subnet_ids
-  db_sg_id      = module.security.db_sg_id
+  # Database connection info
+  db_endpoint = module.database.db_endpoint
+  db_name     = var.db_name
+  db_username = var.db_username
+  db_password = var.db_password
 
   environment  = var.environment
   project_name = var.project_name
