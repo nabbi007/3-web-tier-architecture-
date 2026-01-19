@@ -90,3 +90,16 @@ variable "db_password" {
   sensitive   = true
   default     = "ChangeMe123!"
 }
+
+variable "git_repo_url" {
+  description = "Git repository URL for the kanban application"
+  type        = string
+  default     = "https://github.com/nabbi007/Kanban-app.git"
+}
+
+variable "git_branch" {
+  description = "Git branch to checkout for the kanban application"
+  type        = string
+  default     = "main"
+}
+

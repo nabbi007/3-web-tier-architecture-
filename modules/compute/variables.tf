@@ -88,3 +88,15 @@ variable "db_password" {
   type        = string
   sensitive   = true
 }
+
+variable "git_repo_url" {
+  description = "Git repository URL for the kanban application"
+  type        = string
+}
+
+variable "git_branch" {
+  description = "Git branch to checkout (optional, defaults to repo default branch)"
+  type        = string
+  default     = ""
+}
+

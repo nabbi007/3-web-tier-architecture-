@@ -68,6 +68,10 @@ module "compute" {
   db_username = var.db_username
   db_password = var.db_password
 
+  # Git repository info for application deployment
+  git_repo_url = var.git_repo_url
+  git_branch   = var.git_branch
+
   environment  = var.environment
   project_name = var.project_name
   owner        = var.owner
