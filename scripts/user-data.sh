@@ -10,9 +10,12 @@ echo "Starting user data script..."
 # Update system
 apt-get update -y
 
-# Install Node.js 20.x and git
+# Install Node.js 20.x, git, and jq
 curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-apt-get install -y nodejs git
+apt-get install -y nodejs git jq
+
+# AWS CLI is pre-installed on Ubuntu AMIs, verify it works
+aws --version
 
 # Clone the application from git repository
 echo "Cloning kanban app from git repository..."
@@ -29,12 +32,26 @@ if [ -n "${GIT_BRANCH}" ]; then
   git checkout ${GIT_BRANCH}
 fi
 
-# Create .env file with database credentials
+# Retrieve database credentials from Secrets Manager
+echo "Retrieving database credentials from Secrets Manager..."
+SECRET_JSON=$(aws secretsmanager get-secret-value \
+  --secret-id ${DB_SECRET_NAME} \
+  --region ${AWS_REGION} \
+  --query SecretString \
+  --output text)
+
+# Parse the secret JSON
+DB_HOST=$(echo $${SECRET_JSON} | jq -r '.host')
+DB_USER=$(echo $${SECRET_JSON} | jq -r '.username')
+DB_PASSWORD=$(echo $${SECRET_JSON} | jq -r '.password')
+DB_NAME=$(echo $${SECRET_JSON} | jq -r '.dbname')
+
+# Create .env file with database credentials from Secrets Manager
 cat > .env <<ENV
-DB_HOST=${DB_HOST}
-DB_USER=${DB_USER}
-DB_PASSWORD=${DB_PASSWORD}
-DB_NAME=${DB_NAME}
+DB_HOST=$${DB_HOST}
+DB_USER=$${DB_USER}
+DB_PASSWORD=$${DB_PASSWORD}
+DB_NAME=$${DB_NAME}
 PORT=80
 ENV
 

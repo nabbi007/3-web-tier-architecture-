@@ -21,6 +21,15 @@ resource "aws_vpc_security_group_ingress_rule" "web_http" {
   ip_protocol       = "tcp"
   to_port           = 80
 }
+
+# Allow HTTPS from anywhere (always enabled for flexibility)
+resource "aws_vpc_security_group_ingress_rule" "web_https" {
+  security_group_id = aws_security_group.web_alb_sg.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 443
+  ip_protocol       = "tcp"
+  to_port           = 443
+}
 # Allow ICMP (ping) from anywhere
 resource "aws_vpc_security_group_ingress_rule" "web_icmp" {
   security_group_id = aws_security_group.web_alb_sg.id

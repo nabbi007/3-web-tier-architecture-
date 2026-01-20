@@ -40,13 +40,6 @@ variable "db_username" {
   default     = "admin"
 }
 
-variable "db_password" {
-  description = "Database password"
-  type        = string
-  sensitive   = true
-  default     = "password123"
-}
-
 variable "db_instance_class" {
   description = "RDS instance class"
   type        = string
@@ -69,4 +62,22 @@ variable "db_allocated_storage" {
   description = "Allocated storage in GB"
   type        = number
   default     = 20
+}
+
+variable "kms_key_id" {
+  description = "KMS key ID for RDS encryption (leave empty to use AWS managed key)"
+  type        = string
+  default     = ""
+}
+
+variable "enable_multi_az" {
+  description = "Enable Multi-AZ deployment for high availability"
+  type        = bool
+  default     = false  # Set to true for production
+}
+
+variable "enable_deletion_protection" {
+  description = "Enable deletion protection for RDS instance"
+  type        = bool
+  default     = true  # Set to true for production
 }

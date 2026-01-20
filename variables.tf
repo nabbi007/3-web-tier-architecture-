@@ -84,13 +84,6 @@ variable "db_username" {
   default     = "admin"
 }
 
-variable "db_password" {
-  description = "Database password"
-  type        = string
-  sensitive   = true
-  default     = "ChangeMe123!"
-}
-
 variable "git_repo_url" {
   description = "Git repository URL for the kanban application"
   type        = string
@@ -98,6 +91,19 @@ variable "git_repo_url" {
 }
 
 variable "git_branch" {
+  description = "Git branch to deploy"
+  type        = string
+  default     = "main"
+}
+
+variable "certificate_arn" {
+  description = "ARN of the SSL/TLS certificate for HTTPS listener (from AWS Certificate Manager). Leave empty to use HTTP only."
+  type        = string
+  default     = ""
+  # Example: "arn:aws:acm:eu-west-1:123456789012:certificate/abc12345-1234-1234-1234-123456789012"
+}
+
+variable "git_branch_unused" {
   description = "Git branch to checkout for the kanban application"
   type        = string
   default     = "main"

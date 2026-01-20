@@ -68,6 +68,16 @@ variable "ami_owner" {
   default     = "099720109477" # Canonical
 }
 
+variable "db_secret_arn" {
+  description = "ARN of the Secrets Manager secret containing database credentials"
+  type        = string
+}
+
+variable "db_secret_name" {
+  description = "Name of the Secrets Manager secret"
+  type        = string
+}
+
 variable "db_endpoint" {
   description = "RDS database endpoint"
   type        = string
@@ -78,15 +88,9 @@ variable "db_name" {
   type        = string
 }
 
-variable "db_username" {
-  description = "Database username"
+variable "aws_region" {
+  description = "AWS region for Secrets Manager access"
   type        = string
-}
-
-variable "db_password" {
-  description = "Database password"
-  type        = string
-  sensitive   = true
 }
 
 variable "git_repo_url" {
@@ -99,4 +103,3 @@ variable "git_branch" {
   type        = string
   default     = ""
 }
-

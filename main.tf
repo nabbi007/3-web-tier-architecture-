@@ -28,7 +28,7 @@ module "alb" {
   vpc_id            = module.networking.vpc_id
   public_subnet_ids = module.networking.public_subnet_ids
   web_alb-sg_id     = module.security.web_sg_id
-
+  certificate_arn   = var.certificate_arn
 
   environment  = var.environment
   project_name = var.project_name
@@ -44,7 +44,6 @@ module "database" {
 
   db_name     = var.db_name
   db_username = var.db_username
-  db_password = var.db_password
 
   environment  = var.environment
   project_name = var.project_name
@@ -62,11 +61,12 @@ module "compute" {
   ami_ssm_parameter_name = var.ami_ssm_parameter_name
   instance_type          = var.instance_type
 
-  # Database connection info
-  db_endpoint = module.database.db_endpoint
-  db_name     = var.db_name
-  db_username = var.db_username
-  db_password = var.db_password
+  # Secrets Manager info for database credentials
+  db_secret_arn  = module.database.db_secret_arn
+  db_secret_name = module.database.db_secret_name
+  db_endpoint    = split(":", module.database.db_endpoint)[0]
+  db_name        = var.db_name
+  aws_region     = var.aws_region
 
   # Git repository info for application deployment
   git_repo_url = var.git_repo_url

@@ -28,7 +28,12 @@ variable "project_name" {
 variable "owner" {
   description = "illiasu is the owner"
   type        = string
-  default     = "illiasu"
+}
+
+variable "certificate_arn" {
+  description = "ARN of the SSL certificate for HTTPS listener (optional)"
+  type        = string
+  default     = ""
 }
 
 
