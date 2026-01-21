@@ -7,14 +7,13 @@ exec 2>&1
 
 echo "Starting user data script..."
 
-# Update system
-apt-get update -y
+# Update system (Amazon Linux 2023)
+dnf update -y
 
 # Install Node.js 20.x, git, and jq
-curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-apt-get install -y nodejs git jq
+dnf install -y nodejs git jq
 
-# AWS CLI is pre-installed on Ubuntu AMIs, verify it works
+# AWS CLI is pre-installed on Amazon Linux AMIs, verify it works
 aws --version
 
 # Clone the application from git repository
@@ -45,6 +44,11 @@ DB_HOST=$(echo $${SECRET_JSON} | jq -r '.host')
 DB_USER=$(echo $${SECRET_JSON} | jq -r '.username')
 DB_PASSWORD=$(echo $${SECRET_JSON} | jq -r '.password')
 DB_NAME=$(echo $${SECRET_JSON} | jq -r '.dbname')
+
+# If host is not in secrets, use the provided DB_ENDPOINT
+if [ "$${DB_HOST}" = "null" ] || [ -z "$${DB_HOST}" ]; then
+  DB_HOST="${DB_ENDPOINT}"
+fi
 
 # Create .env file with database credentials from Secrets Manager
 cat > .env <<ENV

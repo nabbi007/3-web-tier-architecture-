@@ -20,13 +20,16 @@ resource "aws_lb_target_group" "app" {
   port     = var.target_port
   protocol = "HTTP"
   vpc_id   = var.vpc_id
+  deregistration_delay = 30
 
   health_check {
+    enabled             = true
     path                = var.health_check_path
-    interval            = 60
+    interval            = 15
     timeout             = 10
-    healthy_threshold   = 3
+    healthy_threshold   = 2
     unhealthy_threshold = 3
+    matcher             = "200"
   }
 
   tags = {
@@ -55,7 +58,14 @@ resource "aws_lb_listener" "http" {
       }
     }
     
-    target_group_arn = var.certificate_arn == "" ? aws_lb_target_group.app.arn : null
+    dynamic "forward" {
+      for_each = var.certificate_arn == "" ? [1] : []
+      content {
+        target_group {
+          arn = aws_lb_target_group.app.arn
+        }
+      }
+    }
   }
 }
 

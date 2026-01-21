@@ -92,54 +92,13 @@ resource "aws_launch_template" "app" {
     arn = aws_iam_instance_profile.ec2_profile.arn
   }
 
-  user_data = base64encode(<<-EOF
-#!/bin/bash
-apt-get update -y
-apt-get install -y nodejs npm git awscli jq
-
-# Clone the application from GitHub
-git clone ${var.git_repo_url} /opt/kanban-app
-cd /opt/kanban-app
-
-# Install dependencies
-npm install
-
-# Fetch secrets from AWS Secrets Manager
-SECRET_JSON=$(aws secretsmanager get-secret-value --secret-id ${var.db_secret_name} --region ${var.aws_region} --query SecretString --output text)
-DB_USERNAME=$(echo $SECRET_JSON | jq -r '.username')
-DB_PASSWORD=$(echo $SECRET_JSON | jq -r '.password')
-
-# Set environment variables for the app
-cat > /etc/environment <<ENV
-DB_HOST=${var.db_endpoint}
-DB_USER=$DB_USERNAME
-DB_PASSWORD=$DB_PASSWORD
-DB_NAME=${var.db_name}
-PORT=80
-ENV
-
-cat > /etc/systemd/system/kanban-app.service <<'SVC'
-[Unit]
-Description=Kanban App
-After=network.target
-
-[Service]
-Type=simple
-User=root
-WorkingDirectory=/opt/kanban-app
-EnvironmentFile=/etc/environment
-ExecStart=/usr/bin/node server.js
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-SVC
-
-systemctl daemon-reload
-systemctl enable kanban-app
-systemctl start kanban-app
-EOF
-  )
+  user_data = base64encode(templatefile("${path.module}/../../scripts/user-data.sh", {
+    GIT_REPO_URL    = var.git_repo_url
+    GIT_BRANCH      = var.git_branch
+    DB_SECRET_NAME  = var.db_secret_name
+    AWS_REGION      = var.aws_region
+    DB_ENDPOINT     = var.db_endpoint
+  }))
 
   tags = {
     Name        = "${var.project_name}-${var.environment}-app"
@@ -157,7 +116,7 @@ resource "aws_autoscaling_group" "app" {
   desired_capacity    = var.desired_capacity
   vpc_zone_identifier = var.private_subnet_ids
   health_check_type   = "ELB"
-  health_check_grace_period = 600  # 10 minutes - allow time for app deployment
+  health_check_grace_period = 600  # 10 minutes - allow time for app deployment and DB initialization
 
   launch_template {
     id      = aws_launch_template.app.id

@@ -13,7 +13,7 @@ resource "aws_db_subnet_group" "db" {
 
 # Secrets Manager Secret - Auto-generated password
 resource "aws_secretsmanager_secret" "db_password" {
-  name                    = "${var.project_name}-${var.environment}-db-credentials"
+  name                    = "${var.project_name}-${var.environment}-db-credentials-${formatdate("YYYY-MM-DD-hhmm", timestamp())}"
   description             = "RDS database password for ${var.project_name}-${var.environment}"
   kms_key_id              = var.kms_key_id != "" ? var.kms_key_id : null
   recovery_window_in_days = 7  # 7-day recovery window before permanent deletion
