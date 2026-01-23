@@ -161,3 +161,57 @@ resource "aws_autoscaling_attachment" "app" {
   autoscaling_group_name = aws_autoscaling_group.app.id
   lb_target_group_arn    = var.target_group_arn
 }
+
+# # Scale Up Policy
+# resource "aws_autoscaling_policy" "scale_up" {
+#   name                   = "${var.project_name}-${var.environment}-scale-up"
+#   scaling_adjustment     = 1
+#   adjustment_type        = "ChangeInCapacity"
+#   cooldown              = 300
+#   autoscaling_group_name = aws_autoscaling_group.app.name
+# }
+
+# # Scale Down Policy
+# resource "aws_autoscaling_policy" "scale_down" {
+#   name                   = "${var.project_name}-${var.environment}-scale-down"
+#   scaling_adjustment     = -1
+#   adjustment_type        = "ChangeInCapacity"
+#   cooldown              = 300
+#   autoscaling_group_name = aws_autoscaling_group.app.name
+# }
+
+# # CloudWatch Alarm - High CPU
+# resource "aws_cloudwatch_metric_alarm" "cpu_high" {
+#   alarm_name          = "${var.project_name}-${var.environment}-cpu-high"
+#   comparison_operator = "GreaterThanThreshold"
+#   evaluation_periods  = "2"
+#   metric_name         = "CPUUtilization"
+#   namespace           = "AWS/EC2"
+#   period              = "300"
+#   statistic           = "Average"
+#   threshold           = "70"
+#   alarm_description   = "This metric monitors ec2 cpu utilization"
+#   alarm_actions       = [aws_autoscaling_policy.scale_up.arn]
+
+#   dimensions = {
+#     AutoScalingGroupName = aws_autoscaling_group.app.name
+#   }
+# }
+
+# # CloudWatch Alarm - Low CPU
+# resource "aws_cloudwatch_metric_alarm" "cpu_low" {
+#   alarm_name          = "${var.project_name}-${var.environment}-cpu-low"
+#   comparison_operator = "LessThanThreshold"
+#   evaluation_periods  = "2"
+#   metric_name         = "CPUUtilization"
+#   namespace           = "AWS/EC2"
+#   period              = "300"
+#   statistic           = "Average"
+#   threshold           = "30"
+#   alarm_description   = "This metric monitors ec2 cpu utilization"
+#   alarm_actions       = [aws_autoscaling_policy.scale_down.arn]
+
+#   dimensions = {
+#     AutoScalingGroupName = aws_autoscaling_group.app.name
+#   }
+# }

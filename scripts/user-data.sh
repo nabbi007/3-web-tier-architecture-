@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -eou pipefail 
 
 # Log everything to file
 exec > >(tee /var/log/user-data.log)
